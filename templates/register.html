@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+    integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+    integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous">
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+    integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous">
+  </script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+    integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous">
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-ajaxy/1.6.1/scripts/jquery.ajaxy.min.js"></script>
+
+  <title>Login</title>
+  <style>
+    .card {
+      margin: 0 auto;
+      float: none;
+      margin-top: 7rem;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="card shadow p-3 mb-5 bg-white rounded" style="width: 35rem;">
+    <div class="card-body">
+      <h3 class="card-title">Register From Here</h3>
+      <form action="register" method="POST" id = "forms" onsubmit="return validate()">
+        {% csrf_token %}
+        <div class="form-group">
+          <label for="exampleInputEmail1">Name</label>
+          <input type="text" class="form-control" name="name" id="name" aria-describedby="emailHelp">
+        </div>
+        <div class="form-group">
+          <label for="exampleInputEmail1">Username</label>
+          <input type="text" class="form-control" name="usr" id="emails" aria-describedby="emailHelp">
+          <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+        </div>
+        <div class="form-group">
+          <label for="exampleInputPassword1">Password</label>
+          <input type="password" class="form-control" name="pass" id="exampleInputPassword1">
+        </div>
+        <div class="form-group">
+          <label for="exampleInputPassword1">Confirm Password</label>
+          <input type="password" class="form-control" name="cpass" id="exampleInputPassword2">
+        </div>
+
+        <a href="/">Already have an account</a><br><br>
+
+        <div class="row">
+          <div class="col-4"><button type="submit" class="btn btn-success">Login</button></div>
+          <div class="col-2"></div>
+          <div class="col-6"><button type="button" class="btn btn-warning" onclick="init()">Allow Camer Acesses</button>
+          </div>
+        </div>
+      </form>
+
+    </div>
+  </div>
+  <script>
+    function validate() {
+      var email = document.getElementById('emails').value
+      var pass = document.getElementById('exampleInputPassword1').value
+      var cpass = document.getElementById('exampleInputPassword2').value
+      console.log(email.length, pass)
+      if (email.length == 0 || pass.length == 0) {
+        console.log("It is correct")
+        return false;
+      } else if (pass != cpass)
+        return false;
+      else
+        return true;
+    }
+  </script>
+  <script type="text/javascript">
+    // More API functions here:
+    // https://github.com/googlecreativelab/teachablemachine-community/tree/master/libraries/image
+
+    // the link to your model provided by Teachable Machine export panel
+    const URL = "./web design/";
+
+    let model, webcam, labelContainer, maxPredictions;
+
+    // Load the image model and setup the webcam
+    async function init() {
+
+      // Convenience function to setup a webcam
+      const flip = true; // whether to flip the webcam
+      webcam = new tmImage.Webcam(300, 300, flip); // width, height, flip
+      await webcam.setup(); // request access to the webcam
+      await webcam.play();
+      window.requestAnimationFrame(loop);
+
+      // append elements to the DOM
+      document.getElementById("webcam-container").appendChild(webcam.canvas);
+      labelContainer = document.getElementById("label-container");
+
+    }
+    counter = 10
+    async function loop() {
+
+      webcam.update(); // update the webcam frame
+      //var newImg = document.createElement("img"); // create img tag
+      //newImg.src = webcam.canvas.toDataURL();
+      //newImg.name = counter
+      //newImg.id = "canvas"
+      //document.body.appendChild(newImg);
+      //document.getElementById('img_data').value = newImg.src
+      if (counter != 0) {
+        var newImg = document.createElement("img"); // create img tag
+        newImg.src = webcam.canvas.toDataURL();
+        newImg.name = counter
+        newImg.id = "canvas"+counter
+        document.body.appendChild(newImg);
+        
+        //GENRATING HIDDEN TYPE
+        var hiddenType = document.createElement("input"); // create img tag
+        hiddenType.type = "hidden"
+        hiddenType.name = counter
+        hiddenType.id = "canvas"+counter
+        hiddenType.value = newImg.src
+        document.getElementById('forms').appendChild(hiddenType);
+
+
+        window.requestAnimationFrame(loop);
+        counter--;
+      }
+
+    }
+
+    // run the webcam image through the image model
+  </script>
+</body>
+
+</html>

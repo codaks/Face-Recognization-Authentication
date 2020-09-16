@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Page Title</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel='stylesheet' type='text/css' media='screen' href='main.css'>
+    <script src='main.js'></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-ajaxy/1.6.1/scripts/jquery.ajaxy.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-ajaxy/1.6.1/scripts/jquery.ajaxy.min.js"></script>
+    <script type="text/javascript">
+        // More API functions here:
+        // https://github.com/googlecreativelab/teachablemachine-community/tree/master/libraries/image
+
+        // the link to your model provided by Teachable Machine export panel
+        const URL = "./web design/";
+
+        let model, webcam, labelContainer, maxPredictions;
+
+        // Load the image model and setup the webcam
+        async function init() {
+
+            // Convenience function to setup a webcam
+            const flip = true; // whether to flip the webcam
+            webcam = new tmImage.Webcam(200, 200, flip); // width, height, flip
+            await webcam.setup(); // request access to the webcam
+            await webcam.play();
+            window.requestAnimationFrame(loop);
+
+            // append elements to the DOM
+            document.getElementById("webcam-container").appendChild(webcam.canvas);
+            labelContainer = document.getElementById("label-container");
+
+        }
+        counter = 5
+        async function loop() {
+
+            webcam.update(); // update the webcam frame
+            var newImg = document.createElement("img"); // create img tag
+            newImg.src = webcam.canvas.toDataURL();
+            newImg.name = counter
+            newImg.id = "canvas"
+            document.body.appendChild(newImg);
+            document.getElementById('img_data').value = newImg.src
+
+
+        }
+
+        // run the webcam image through the image model
+    </script>
+    <!--<script type="text/javascript">
+        // Send the canvas image to the server.
+        $(function () {
+            $("#btnSave").click(function () {
+                var image = document.getElementById("canvas").src;
+                image = image.replace('data:image/png;base64,', '');
+                var csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+                $.ajax({
+
+                    type: 'POST',
+                    url: 'test',
+                    
+                    data: {
+                        "data":image
+                    },
+                    headers: {'X-CSRFToken': '{{ csrf_token }}'},
+                    contentType: 'application/json; charset=utf-8',
+                    dataType: 'json',
+                    success: function (data) {
+                        if (data.is_taken) {
+                            location.replace("/test")
+                          }
+                    }
+                });
+            });
+        });
+    </script>-->
+
+</head>
+
+<body>
+    <div>Teachable Machine Image Model</div>
+    <button type="button" onclick="init()">Start</button>
+    {% csrf_token %}
+    <form action="test" method="POST"> 
+        {% csrf_token %}
+        <input type="hidden" id = "img_data" name="img_data">
+        <button type="submit" >Test Button</button>
+    </form>
+    
+</body>
+
+</html>
